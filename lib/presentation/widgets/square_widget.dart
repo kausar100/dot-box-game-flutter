@@ -28,8 +28,8 @@ class SquareWidget extends StatelessWidget {
         provider.lastBoxCol == col;
 
     Widget square = Container(
-      width: 50,
-      height: 50,
+      width: 48,
+      height: 48,
       margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         color: boxColor,
@@ -39,7 +39,7 @@ class SquareWidget extends StatelessWidget {
             ? [
           BoxShadow(
             color: boxColor.withOpacity(0.5),
-            blurRadius: 6,
+            blurRadius: 4,
             spreadRadius: 1,
           ),
         ]
@@ -52,7 +52,7 @@ class SquareWidget extends StatelessWidget {
           fontSize: 24,
           fontWeight: FontWeight.bold,
           color: owner == null ? Colors.transparent : Colors.white,
-          shadows: [const Shadow(color: Colors.black54, blurRadius: 2)],
+          shadows: const [Shadow(color: Colors.black54, blurRadius: 2)],
         ),
       ),
     );

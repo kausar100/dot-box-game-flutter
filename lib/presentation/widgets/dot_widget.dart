@@ -14,7 +14,7 @@ class DotWidget extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
-            blurRadius: 4,
+            blurRadius: 2,
             offset: const Offset(2, 2),
           ),
         ],

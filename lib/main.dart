@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Dots and Boxes',
       theme: ThemeData.light(),
       home: const SplashScreen(), // Start with splash screen

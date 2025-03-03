@@ -34,8 +34,8 @@ class EdgeWidget extends StatelessWidget {
         provider.lastEdgeIsHorizontal == isHorizontal;
 
     Widget edge = Container(
-      width: isHorizontal ? 50 : 12,
-      height: isHorizontal ? 12 : 50,
+      width: isHorizontal ? 40 : 15,
+      height: isHorizontal ? 15 : 40,
       margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         color: edgeColor,
