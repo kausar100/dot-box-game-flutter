@@ -1,3 +1,4 @@
+import 'package:dot_box_game/data/models/game_state.dart';
 import 'package:dot_box_game/presentation/providers/game_provider.dart';
 import 'package:dot_box_game/presentation/widgets/dot_widget.dart';
 import 'package:dot_box_game/presentation/widgets/edge_widget.dart';
@@ -11,104 +12,198 @@ class GameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Dots and Boxes"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => context.read<GameProvider>().restartGame(),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueGrey, Colors.white],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
+        ),
+        child: SafeArea(
+          child: Consumer<GameProvider>(
+            builder: (context, provider, child) {
+              final state = provider.gameState;
+              return Column(
+                children: [
+                  _buildHeader(context, state, provider),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                spreadRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children:
+                                  List.generate(state.gridSize * 2 + 1, (row) {
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(
+                                      state.gridSize * 2 + 1, (col) {
+                                    if (row % 2 == 0 && col % 2 == 0) {
+                                      return const DotWidget();
+                                    } else if (row % 2 == 0) {
+                                      int edgeRow = row ~/ 2;
+                                      int edgeCol = col ~/ 2;
+                                      return EdgeWidget(
+                                        isHorizontal: true,
+                                        row: edgeRow,
+                                        col: edgeCol,
+                                        isDrawn: state.horizontalEdges[edgeRow]
+                                            [edgeCol],
+                                        owner:
+                                            state.horizontalEdgeOwners[edgeRow]
+                                                [edgeCol],
+                                        onTap: () => provider.toggleEdge(
+                                            true, edgeRow, edgeCol),
+                                      );
+                                    } else if (col % 2 == 0) {
+                                      int edgeRow = row ~/ 2;
+                                      int edgeCol = col ~/ 2;
+                                      return EdgeWidget(
+                                        isHorizontal: false,
+                                        row: edgeRow,
+                                        col: edgeCol,
+                                        isDrawn: state.verticalEdges[edgeRow]
+                                            [edgeCol],
+                                        owner: state.verticalEdgeOwners[edgeRow]
+                                            [edgeCol],
+                                        onTap: () => provider.toggleEdge(
+                                            false, edgeRow, edgeCol),
+                                      );
+                                    } else {
+                                      int boxRow = row ~/ 2;
+                                      int boxCol = col ~/ 2;
+                                      return SquareWidget(
+                                        owner: state.boxes[boxRow][boxCol],
+                                        row: boxRow,
+                                        col: boxCol,
+                                      );
+                                    }
+                                  }),
+                                );
+                              }),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (state.gameOver)
+                    _buildGameOverOverlay(context, state, provider),
+                ],
+              );
+            },
+          ),
+        ),
       ),
-      body: Consumer<GameProvider>(
-        builder: (context, provider, child) {
-          final state = provider.gameState;
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+    );
+  }
+
+  Widget _buildHeader(
+      BuildContext context, GameState state, GameProvider provider) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Player 1: ${state.scores[0]}   Player 2: ${state.scores[1]}",
-                  style: const TextStyle(fontSize: 20),
+              Text(
+                "Player 1: ${state.scores[0]}",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue[800],
                 ),
               ),
               Text(
-                "Current Turn: Player ${state.currentPlayer}",
+                "Player 2: ${state.scores[1]}",
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: state.currentPlayer == 1 ? Colors.blue : Colors.red,
-                ),
-              ),
-              if (state.gameOver)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Winner: ${state.scores[0] > state.scores[1] ? 'Player 1' : state.scores[1] > state.scores[0] ? 'Player 2' : 'Tie'}",
-                    style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green),
-                  ),
-                ),
-              Expanded(
-                child: Center(
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(state.gridSize * 2 + 1, (row) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children:
-                              List.generate(state.gridSize * 2 + 1, (col) {
-                            if (row % 2 == 0 && col % 2 == 0) {
-                              return const DotWidget();
-                            } else if (row % 2 == 0) {
-                              int edgeRow = row ~/ 2;
-                              int edgeCol = col ~/ 2;
-                              return EdgeWidget(
-                                isHorizontal: true,
-                                row: edgeRow,
-                                col: edgeCol,
-                                isDrawn: state.horizontalEdges[edgeRow]
-                                    [edgeCol],
-                                owner: state.horizontalEdgeOwners[edgeRow]
-                                    [edgeCol],
-                                onTap: () =>
-                                    provider.toggleEdge(true, edgeRow, edgeCol),
-                              );
-                            } else if (col % 2 == 0) {
-                              int edgeRow = row ~/ 2;
-                              int edgeCol = col ~/ 2;
-                              return EdgeWidget(
-                                isHorizontal: false,
-                                row: edgeRow,
-                                col: edgeCol,
-                                isDrawn: state.verticalEdges[edgeRow][edgeCol],
-                                owner: state.verticalEdgeOwners[edgeRow]
-                                    [edgeCol],
-                                onTap: () => provider.toggleEdge(
-                                    false, edgeRow, edgeCol),
-                              );
-                            } else {
-                              int boxRow = row ~/ 2;
-                              int boxCol = col ~/ 2;
-                              return SquareWidget(
-                                owner: state.boxes[boxRow][boxCol],
-                              );
-                            }
-                          }),
-                        );
-                      }),
-                    ),
-                  ),
+                  color: Colors.red[800],
                 ),
               ),
             ],
-          );
-        },
+          ),
+          Column(
+            children: [
+              Text(
+                "Turn: Player ${state.currentPlayer}",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: state.currentPlayer == 1
+                      ? Colors.blue[800]
+                      : Colors.red[800],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.refresh, color: Colors.white),
+                onPressed: provider.restartGame,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGameOverOverlay(
+      BuildContext context, GameState state, GameProvider provider) {
+    String result = state.scores[0] > state.scores[1]
+        ? 'Player 1 Wins!'
+        : state.scores[1] > state.scores[0]
+            ? 'Player 2 Wins!'
+            : 'It\'s a Tie!';
+    return Container(
+      color: Colors.black54,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                result,
+                style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: provider.restartGame,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueGrey,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                ),
+                child: const Text('Play Again',
+                    style: TextStyle(fontSize: 18, color: Colors.white)),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
