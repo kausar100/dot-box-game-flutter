@@ -1,16 +1,12 @@
 # dot_box_game
 
-A new Flutter project.
+A new Flutter project Dot and Box game.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+![Screenshot_1740989419](https://github.com/user-attachments/assets/375dc8cc-b778-4309-837e-ce7baa900e50)
 
-A few resources to get you started if this is your first Flutter project:
+![Screenshot_1740990332](https://github.com/user-attachments/assets/fd1f9dfc-ab7d-496a-b286-85af46fc028d)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![Screenshot_1740990375](https://github.com/user-attachments/assets/5931f373-d264-4180-86d1-acc9585546f5)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Screenshot_1740990301](https://github.com/user-attachments/assets/0f7a938c-b184-44cb-a7b6-0fe97d236d3b)
